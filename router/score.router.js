@@ -9,7 +9,7 @@ router.route('/:id')
     .put(controller.updateUserScore)
 
 router.all('*', function (req, res) {
-    res.status(404).json({ message: 'Tags: Route não definida.' });
+    res.status(404).json({ message: 'Rota não definida.' });
 })
 
 module.exports = router;

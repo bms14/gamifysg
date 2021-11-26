@@ -7,8 +7,11 @@ const tools = require('../tool/validationtool')
 router.route('/:id')
     .get(controller.getPrize)
 
+router.route('/:id/:userid')
+    .post(controller.buyPrize)
+
 router.all('*', function (req, res) {
-    res.status(404).json({ message: 'Tags: Route não definida.' });
+    res.status(404).json({ message: 'Rota não definida.' });
 })
 
 module.exports = router;
