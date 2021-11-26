@@ -1,0 +1,23 @@
+{
+  "name": "gamifysg",
+  "version": "1.0.0",
+  "description": "Serviço de Gamificação para Sofia Godinho",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx nodemon app.js -w"
+  },
+  "keywords": [
+    "Gamify",
+    "Sofia",
+    "Godinho",
+    "Sequelize"
+  ],
+  "author": "Marco Marques",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15"
+  }
+}
