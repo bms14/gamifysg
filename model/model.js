@@ -42,7 +42,7 @@ class UserMedals extends Model {}
 UserMedals.init({
     id_medal: {type: DataTypes.INTEGER, allowNull: false},
     id_user: {type: DataTypes.INTEGER, allowNull: false},
-}, { sequelize, modelName: 'UserPrize'})
+}, { sequelize, modelName: 'UserMedal'})
 
 
 sequelize.sync().then().catch(error => {

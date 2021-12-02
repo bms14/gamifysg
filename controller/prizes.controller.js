@@ -25,8 +25,8 @@ exports.getPrize = async (req,res) =>{
 
 exports.buyPrize = async (req,res) =>{
     try {
-        let data = await Prizes.findOne({where:{id_prize:req.params.id}})
-        if(!data)
+        let prize = await Prizes.findOne({where:{id_prize:req.params.id}})
+        if(!prize)
         {
             res.status(404).json({
                 message: "This prize does not exist."
@@ -34,17 +34,26 @@ exports.buyPrize = async (req,res) =>{
         }
         else{
 
-            let user = await Prizes.findOne({where:{id_user:req.params.userid}})
-            if (!user){
+            let userScore = await Score.findOne({where:{id_user:req.params.userid}})
+            if (!userScore){
                 res.status(404).json({
                     message: "This user does not exist."
                 });
             }
             else{
-                Prizes.create({
-                    
-                })
-                res.status(200).json(data);
+                
+                if(userScore <= prize.points){
+                    res.status(401).json({
+                        message: "This user does not have enough points."
+                    });
+                }
+                else{
+                    UserPrizes.create({
+                        id_user: req.params.userid,
+                        id_prize: req.params.id
+                    })
+                    res.status(200).json({message:"Prize bought successfully."});
+                }
             }
         }
     }
