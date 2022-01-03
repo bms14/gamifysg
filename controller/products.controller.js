@@ -5,16 +5,9 @@ const axios = require('axios')
 
 exports.getProducts = async (req,res) =>{
     try {
-        if(!req.body.category){
-            let data = await axios.get(url+"?"+key)
-            data = convert.xml2json(data.data, {compact: true, ignoreComment: true, spaces: 4})
-            res.status(200).json(data);
-        }
-        else{
-            let data = await axios.get(url+`/?filter[id_category_default]=${req.body.category}&`+key)
-            data = convert.xml2json(data.data, {compact: true, ignoreComment: true, spaces: 4})
-            res.status(200).json(data);
-        }
+        let data = await axios.get(url+"?"+key)
+        data = convert.xml2json(data.data, {compact: true, ignoreComment: true, spaces: 4})
+        res.status(200).json(data)
     }
     catch (err) {
         res.status(500).json({
@@ -38,7 +31,9 @@ exports.getProductById = async (req,res) =>{
 
 exports.getProductByCategory = async (req,res) =>{
     try {
-
+        let data = await axios.get(url+`/?filter[id_category_default]=${req.params.id}&`+key)
+        data = convert.xml2json(data.data, {compact: true, ignoreComment: true, spaces: 4})
+        res.status(200).json(data);
     }
     catch (err) {
         res.status(500).json({

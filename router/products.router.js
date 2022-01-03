@@ -5,6 +5,9 @@ const controller = require('../controller/products.controller.js')
 router.route('/')
     .get(controller.getProducts)
 
+router.route('/category/:id')
+    .get(controller.getProductByCategory)
+
 router.route('/:id')
     .get(controller.getProductById)
 
