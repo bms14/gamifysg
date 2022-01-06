@@ -1,23 +1,8 @@
 const url = "https://design.sofiagodinho.com/api/products"
-const stockUrl = "https://design.sofiagodinho.com/api/stock_availables/"
-const tagUrl = "https://design.sofiagodinho.com/api/tags/"
+const apiUrl = "http://localhost:3000/products/"
 var key = require('../config/db.config').key
 var convert = require('xml-js')
 const axios = require('axios')
-const async = require('async')
-
-class Product {
-    constructor(id,name,category,description,price,tag,stock,imageLink){
-        this.id=id,
-        this.name=name,
-        this.category=category,
-        this.description=description,
-        this.price=price,
-        this.tag=tag,
-        this.stock=stock,
-        this.imageLink=imageLink
-    }
-}
 
 exports.getProducts = async (req,res) =>{
     try {
@@ -27,9 +12,9 @@ exports.getProducts = async (req,res) =>{
         let productLinks = []
 
         data.prestashop.products.product.forEach(obj=>{
-            productLinks.push(obj._attributes["xlink:href"])
+            productLinks.push(obj._attributes.id)
         })
-        res.status(200).json(data)
+        res.status(200).json(productLinks)
     }
     catch (err) {
         res.status(500).json({
@@ -60,29 +45,16 @@ exports.getProductById = async (req,res) =>{
             images.push(obj._attributes["xlink:href"])
         })
 
-
-        let tags = data.associations.tags.tag
-        let nameTags = []
-
-        for(const obj of tags){
-            let link = obj._attributes["xlink:href"]
-            let req = await axios.get(link+"?"+key)
-            req = JSON.parse(convert.xml2json(req.data, {compact: true, ignoreComment: true, spaces: 4}))
-            let tag = req.prestashop.tag.name._cdata
-            nameTags.push(tag)
+        let product = {
+            "id": data.id._cdata,
+            "name": data.name.language[0]._cdata,
+            "category": data.id_category_default._cdata,
+            "description":data.description_short.language[0]._cdata,
+            "price":data.price._cdata,
+            "stock":finalStock,  
+            "imageLink":images
         }
 
-
-        let product = new Product(
-            data.id._cdata,
-            data.name.language[0]._cdata,
-            data.id_category_default._cdata,
-            data.description_short.language[0]._cdata,
-            data.price._cdata,
-            nameTags,
-            finalStock,  
-            images
-        )
         res.status(200).json(product);
     }
     catch (err) {
@@ -99,8 +71,10 @@ exports.getProductsByCategory = async (req,res) =>{
 
         let productLinks = []
 
+        console.log(data.prestashop.products.product)
+
         data.prestashop.products.product.forEach(obj=>{
-            productLinks.push(obj._attributes["xlink:href"])
+            productLinks.push(apiUrl + obj._attributes.id)
         })
 
         res.status(200).json(productLinks);
@@ -114,7 +88,7 @@ exports.getProductsByCategory = async (req,res) =>{
 
 exports.getProductsByName = async (req,res) =>{
     try {
-        let limit = req.body.limit
+        let limit = req.body.limit ? req.body.limit : 10
         let offset = req.body.offset ? req.body.offset : 0
         let data = await axios.get(url+`/?filter[name]=%[${req.params.text}]%&limit=${offset},${limit}&`+key)
         data = JSON.parse(convert.xml2json(data.data, {compact: true, ignoreComment: true, spaces: 4}))
@@ -124,7 +98,6 @@ exports.getProductsByName = async (req,res) =>{
 
         try{
             for(const obj of data){
-
                 let objUrl = obj._attributes["xlink:href"]
                 let prod = await axios.get(objUrl+"?"+key)
                 prod = JSON.parse(convert.xml2json(prod.data, {compact: true, ignoreComment: true, spaces: 4}))
@@ -170,7 +143,7 @@ exports.getProductsByName = async (req,res) =>{
                 })
             }
         }
-        catch{
+        catch(err){
             produtos="Nenhum resultado encontrado"
         }
         res.status(200).json(produtos)
